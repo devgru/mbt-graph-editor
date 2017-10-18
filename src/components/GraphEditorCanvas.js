@@ -1,4 +1,13 @@
+import {connect} from 'react-redux';
+
 import D3Canvas from './D3Canvas';
+
+import {
+  addPoint,
+  removePoint,
+  toggleLink
+} from '../duck';
+import {bindActionCreators} from 'redux';
 
 class GraphEditorCanvas extends D3Canvas {
   constructor(props) {
@@ -40,16 +49,54 @@ class GraphEditorCanvas extends D3Canvas {
   };
 
   renderCanvasContents = (context) => {
-    const {points} = this.props;
-    const {radius, selectedPoint, currentMousePosition} = this.state;
+    const {points, links} = this.props;
+    const {
+      radius,
+      selectedPoint,
+      currentPoint,
+      currentMousePosition
+    } = this.state;
 
     if (selectedPoint) {
       context.beginPath();
-      context.strokeStyle = '#0F0';
+      context.strokeStyle = '#930';
       context.moveTo(selectedPoint.x, selectedPoint.y);
       context.lineTo(currentMousePosition.x, currentMousePosition.y);
       context.stroke();
+
+      if (currentPoint && currentPoint !== selectedPoint) {
+        const {x, y} = currentPoint;
+
+        context.beginPath();
+        context.strokeStyle = '#930';
+        context.moveTo(x + radius, y);
+        context.arc(x, y, radius, 0, 2 * Math.PI);
+        context.stroke();
+      }
+    } else {
+      if (!currentPoint && currentMousePosition) {
+        const {x, y} = currentMousePosition;
+        context.beginPath();
+        context.strokeStyle = '#333';
+        context.moveTo(x + radius, y);
+        context.arc(x, y, radius, 0, 2 * Math.PI);
+        context.stroke();
+      }
     }
+
+    links.forEach(({id1, id2}) => {
+      context.beginPath();
+
+      const p1 = points.filter(({id}) => id === id1)[0];
+      const p2 = points.filter(({id}) => id === id2)[0];
+
+      context.moveTo(p1.x, p1.y);
+      context.lineTo(p2.x, p2.y);
+
+      context.strokeStyle = '#333';
+
+      context.stroke();
+    });
 
     points.forEach(point => {
       const {x, y} = point;
@@ -63,20 +110,36 @@ class GraphEditorCanvas extends D3Canvas {
       context.arc(x, y, radius, 0, 2 * Math.PI);
       context.fill();
     });
-
   };
 
-  onDoubleClick = (x, y, point) => {
-    // delete point?
-  };
-
-  onClick = (x, y, point) => {
-    if (this.state.selectedPoint) {
-      // add point
+  onDoubleClick = (x, y) => {
+    const {currentPoint, selectedPoint} = this.state;
+    if (currentPoint) {
+      this.props.removePoint(currentPoint.id);
+      if (selectedPoint === currentPoint) {
+        this.setState({selectedPoint: null});
+      }
+    } else {
+      this.props.addPoint(x, y);
+      this.setState({currentMousePosition: null});
     }
-    this.setState({
-      selectedPoint: point
-    });
+  };
+
+  onClick = () => {
+    const {selectedPoint, currentPoint} = this.state;
+
+    if (selectedPoint) {
+      if (currentPoint && currentPoint !== selectedPoint) {
+        this.props.toggleLink(selectedPoint.id, currentPoint.id);
+      }
+      this.setState({
+        selectedPoint: null
+      });
+    } else {
+      this.setState({
+        selectedPoint: currentPoint
+      });
+    }
   };
 
   onMouseMove = (x, y, point) => {
@@ -88,4 +151,15 @@ class GraphEditorCanvas extends D3Canvas {
   };
 }
 
-export default GraphEditorCanvas;
+const mapStateToProps = Object;
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  addPoint,
+  removePoint,
+  toggleLink
+}, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GraphEditorCanvas);

@@ -11,7 +11,7 @@ class D3Canvas extends Component {
     this.state = {
       width: 100,
       height: 100,
-      transform: zoomIdentity,
+      transform: zoomIdentity
     };
   }
 
@@ -60,12 +60,20 @@ class D3Canvas extends Component {
       }
     };
 
+    const dragInstance = drag()
+      .subject(getDragPoint)
+      .on('drag', dragged);
+    const zoomInstance = zoom()
+      .scaleExtent([1 / 2, 8])
+      .on('zoom', zoomed);
+
     canvas
       .on('mousemove', wrap(this.onMouseMove))
       .on('click', wrap(this.onClick))
       .on('dblclick', wrap(this.onDoubleClick))
-      .call(drag().subject(getDragPoint).on('drag', dragged))
-      .call(zoom().scaleExtent([1 / 2, 8]).on('zoom', zoomed));
+      .call(dragInstance)
+      .call(zoomInstance)
+      .on('dblclick.zoom', null);
   };
 
   handleResize = () => {
