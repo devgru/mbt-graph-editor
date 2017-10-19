@@ -1,4 +1,5 @@
 import {connect} from 'react-redux';
+import subscribe from 'react-logux/subscribe';
 
 import D3Canvas from './D3Canvas';
 
@@ -157,9 +158,9 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   addPoint,
   removePoint,
   toggleLink
-}, dispatch);
+}, (action) => dispatch.sync(action));
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(GraphEditorCanvas);
+)(subscribe(() => 'graph')(GraphEditorCanvas));

@@ -4075,6 +4075,36 @@ loglevel@^1.4.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.5.1.tgz#189078c94ab9053ee215a0acdbf24244ea0f6502"
 
+logux-client@^0.2.2:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/logux-client/-/logux-client-0.2.4.tgz#67d605ce015fbc5a4101c2cf7f9e5cd8bd8d9c2f"
+  dependencies:
+    logux-core "^0.2.1"
+    logux-sync "^0.2.1"
+    nanoevents "^1.0.2"
+    nanoid "^0.2.2"
+    promise "^8.0.1"
+
+logux-core@^0.2.0, logux-core@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/logux-core/-/logux-core-0.2.1.tgz#e63ca128a08eb1c4d4f1c965b07269ebb92b516b"
+  dependencies:
+    nanoevents "^1.0.2"
+
+logux-redux@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/logux-redux/-/logux-redux-0.1.1.tgz#82edfea866717dc6c0586612ff49a474e5e2b84f"
+  dependencies:
+    logux-client "^0.2.2"
+    logux-core "^0.2.0"
+    redux "^3.7.2"
+
+logux-sync@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/logux-sync/-/logux-sync-0.2.1.tgz#f3d80fba5f910fcd560ce122aff3c25001ca5a03"
+  dependencies:
+    nanoevents "^1.0.2"
+
 longest@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/longest/-/longest-1.0.1.tgz#30a0b2da38f73770e8294a0d22e6625ed77d0097"
@@ -4289,6 +4319,14 @@ mute-stream@0.0.7:
 nan@^2.3.0:
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.7.0.tgz#d95bf721ec877e08db276ed3fc6eb78f9083ad46"
+
+nanoevents@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/nanoevents/-/nanoevents-1.0.2.tgz#5078a4f8d3e4318aa585c5f2c633cc57fc06ac0f"
+
+nanoid@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-0.2.2.tgz#e2ebc6ad3db5e0454fd8124d30ca39b06555fe56"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -5079,7 +5117,7 @@ progress@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.0.tgz#8a1be366bf8fc23db2bd23f10c6fe920b4389d1f"
 
-promise@8.0.1:
+promise@8.0.1, promise@^8.0.1:
   version "8.0.1"
   resolved "https://registry.yarnpkg.com/promise/-/promise-8.0.1.tgz#e45d68b00a17647b6da711bf85ed6ed47208f450"
   dependencies:
@@ -5246,6 +5284,10 @@ react-error-overlay@^2.0.2:
     react-dom "^15 || ^16"
     settle-promise "1.0.0"
     source-map "0.5.6"
+
+react-logux@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/react-logux/-/react-logux-0.1.0.tgz#7f18016c05b3ed0e8751190966157f7a05d6ec03"
 
 react-redux@^5.0.6:
   version "5.0.6"

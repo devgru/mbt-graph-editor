@@ -28,9 +28,13 @@ export const toggleLink = (id1, id2) => ({
   id2
 });
 
-
 export default (state = initialState, action) => {
   const {points, links, nextId} = state;
+
+  if (!action) {
+    debugger;
+    return state;
+  }
 
   switch (action.type) {
     case ADD_POINT:
