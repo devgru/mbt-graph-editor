@@ -1,21 +1,21 @@
-import {createStore, compose} from 'redux';
+import {applyMiddleware, createStore, compose} from 'redux';
 import duck from './duck';
+import thunk from 'redux-thunk';
 
 const initialState = undefined;
 const enhancers = [];
 
-if (process.env.NODE_ENV === 'development') {
-  const devToolsExtension = window.devToolsExtension;
-
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension());
-  }
-}
+const devtoolsCompose =
+  typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+const composeEnhancers = devtoolsCompose || compose;
 
 const store = createStore(
   duck,
   initialState,
-  compose(...enhancers)
+  composeEnhancers(
+    ...enhancers,
+    applyMiddleware(thunk)
+  )
 );
 
 export default store;

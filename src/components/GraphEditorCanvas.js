@@ -5,7 +5,8 @@ import D3Canvas from './D3Canvas';
 import {
   addPoint,
   removePoint,
-  toggleLink
+  toggleLink,
+  loadStore
 } from '../duck';
 import {bindActionCreators} from 'redux';
 
@@ -17,6 +18,8 @@ class GraphEditorCanvas extends D3Canvas {
       ...this.state,
       radius: 2.5
     };
+
+    this.props.loadStore();
   }
 
   getSubjectPoint = (x, y) => {
@@ -90,12 +93,16 @@ class GraphEditorCanvas extends D3Canvas {
       const p1 = points.filter(({id}) => id === id1)[0];
       const p2 = points.filter(({id}) => id === id2)[0];
 
-      context.moveTo(p1.x, p1.y);
-      context.lineTo(p2.x, p2.y);
+      if (p1 && p2) {
+        context.moveTo(p1.x, p1.y);
+        context.lineTo(p2.x, p2.y);
 
-      context.strokeStyle = '#333';
+        context.strokeStyle = '#333';
 
-      context.stroke();
+        context.stroke();
+      } else {
+        debugger;
+      }
     });
 
     points.forEach(point => {
@@ -156,7 +163,8 @@ const mapStateToProps = Object;
 const mapDispatchToProps = dispatch => bindActionCreators({
   addPoint,
   removePoint,
-  toggleLink
+  toggleLink,
+  loadStore
 }, dispatch);
 
 export default connect(
