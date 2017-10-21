@@ -10,6 +10,7 @@ app.use(cors({credentials: true, origin: true}));
 
 app.post('/dispatch', (request, response) => {
   store.dispatch(request.body);
+  response.send();
 });
 
 app.get('/getState', (request, response) => {
