@@ -5,8 +5,8 @@ const phyllotaxis = radius => i => {
   const a = theta * i;
   return {
     id: i,
-    x: 500 + r * Math.cos(a),
-    y: 500 + r * Math.sin(a)
+    x: 250 + r * Math.cos(a),
+    y: 250 + r * Math.sin(a)
   };
 };
 
