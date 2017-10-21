@@ -5,28 +5,38 @@ export const ADD_POINT = 'graph-editor/ADD_POINT';
 export const REMOVE_POINT = 'graph-editor/REMOVE_POINT';
 export const TOGGLE_LINK = 'graph-editor/TOGGLE_LINK';
 export const APPLY_STATE = 'graph-editor/APPLY_STATE';
+export const CATCH_NETWORK_FAILURE = 'graph-editor/CATCH_NETWORK_FAILURE';
 
 const HOST = 'http://localhost:9182';
 
 const initialState = {
   points: range(1, 20).map(phyllotaxis(10)),
   links: [],
-  nextId: 20
+  nextId: 20,
+  loading: true,
+  failed: false
 };
 
-const dispatchToServer = (fn) => (...args) => {
+const dispatchToServer = (fn) => (...args) => async (dispatch) => {
   const action = fn(...args);
+  dispatch(action);
   if (window) {
-    fetch(`${HOST}/dispatch`, {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(action)
-    });
+    try {
+      await fetch(`${HOST}/dispatch`, {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(action)
+      });
+    } catch (error) {
+      dispatch({
+        type: CATCH_NETWORK_FAILURE,
+        error
+      });
+    }
   }
-  return action;
 };
 
 export const addPoint = dispatchToServer((x, y) => ({
@@ -47,12 +57,19 @@ export const toggleLink = dispatchToServer((id1, id2) => ({
 }));
 
 export const loadStore = () => async (dispatch) => {
-  const response = await fetch(`${HOST}/getState`);
-  const state = await response.json();
-  dispatch({
-    type: APPLY_STATE,
-    state
-  });
+  try {
+    const response = await fetch(`${HOST}/getState`);
+    const state = await response.json();
+    dispatch({
+      type: APPLY_STATE,
+      state
+    });
+  } catch (error) {
+    dispatch({
+      type: CATCH_NETWORK_FAILURE,
+      error
+    });
+  }
 };
 
 export default (state = initialState, action) => {
@@ -60,15 +77,15 @@ export default (state = initialState, action) => {
 
   switch (action.type) {
     case APPLY_STATE:
-      debugger;
       return {
-        ...action.state
+        ...action.state,
+        loading: false
       };
 
     case ADD_POINT:
       const {x, y} = action;
       return {
-        links,
+        ...state,
         points: [
           ...points,
           {x, y, id: nextId}
@@ -78,6 +95,7 @@ export default (state = initialState, action) => {
 
     case REMOVE_POINT:
       return {
+        ...state,
         links: links
           .filter(({id1, id2}) => id1 !== action.id && id2 !== action.id),
         points: points
@@ -98,9 +116,15 @@ export default (state = initialState, action) => {
         : linksWithoutThisLink;
 
       return {
-        points,
-        nextId,
+        ...state,
         links: newLinks
+      };
+
+    case CATCH_NETWORK_FAILURE:
+      console.error(action.error);
+      return {
+        ...state,
+        failed: true
       };
 
     default:
