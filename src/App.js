@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import {Provider} from 'react-redux';
 
-import Canvas from './components/GraphEditorCanvas';
+import Description from './components/Description';
+import GraphEditorCanvas from './components/GraphEditorCanvas';
+import State from './components/State';
+
 import store from './store';
 
 import './App.css';
@@ -11,7 +14,9 @@ class App extends Component {
     return (
       <Provider store={store}>
         <div className="App">
-          <Canvas />
+          <State />
+          <GraphEditorCanvas />
+          <Description />
         </div>
       </Provider>
     );
