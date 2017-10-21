@@ -10,6 +10,9 @@ import {
 } from '../duck';
 import {bindActionCreators} from 'redux';
 
+const basicColor = '#333';
+const activeColor = '#5F5';
+
 class GraphEditorCanvas extends D3Canvas {
   constructor(props) {
     super(props);
@@ -60,62 +63,43 @@ class GraphEditorCanvas extends D3Canvas {
       currentMousePosition
     } = this.state;
 
-    if (selectedPoint) {
-      context.beginPath();
-      context.strokeStyle = '#930';
-      context.moveTo(selectedPoint.x, selectedPoint.y);
-      context.lineTo(currentMousePosition.x, currentMousePosition.y);
-      context.stroke();
+    if (currentMousePosition) {
+      if (selectedPoint) {
+        this.strokeLine(activeColor, selectedPoint, currentMousePosition);
 
-      if (currentPoint && currentPoint !== selectedPoint) {
-        const {x, y} = currentPoint;
+        if (currentPoint && currentPoint !== selectedPoint) {
+          const {x, y} = currentPoint;
 
-        context.beginPath();
-        context.strokeStyle = '#930';
-        context.moveTo(x + radius, y);
-        context.arc(x, y, radius, 0, 2 * Math.PI);
-        context.stroke();
-      }
-    } else {
-      if (!currentPoint && currentMousePosition) {
-        const {x, y} = currentMousePosition;
-        context.beginPath();
-        context.strokeStyle = '#333';
-        context.moveTo(x + radius, y);
-        context.arc(x, y, radius, 0, 2 * Math.PI);
-        context.stroke();
+          this.strokeCircle(activeColor, x, y, radius);
+        }
+      } else {
+        if (currentPoint) {
+          const {x, y} = currentPoint;
+          this.strokeCircle(activeColor, x, y, radius);
+        } else {
+          const {x, y} = currentMousePosition;
+          this.strokeCircle(basicColor, x, y, radius, 1);
+        }
       }
     }
 
-    links.forEach(({id1, id2}) => {
-      context.beginPath();
+    if (selectedPoint) {
+      const {x, y} = selectedPoint;
+      this.strokeCircle(activeColor, x, y, radius);
+    }
 
+    links.forEach(({id1, id2}) => {
       const p1 = points.filter(({id}) => id === id1)[0];
       const p2 = points.filter(({id}) => id === id2)[0];
 
       if (p1 && p2) {
-        context.moveTo(p1.x, p1.y);
-        context.lineTo(p2.x, p2.y);
-
-        context.strokeStyle = '#333';
-
-        context.stroke();
-      } else {
-        debugger;
+        this.strokeLine(basicColor, p1, p2);
       }
     });
 
     points.forEach(point => {
       const {x, y} = point;
-      if (point === selectedPoint) {
-        context.fillStyle = '#930';
-      } else {
-        context.fillStyle = '#333';
-      }
-      context.beginPath();
-      context.moveTo(x + radius, y);
-      context.arc(x, y, radius, 0, 2 * Math.PI);
-      context.fill();
+      this.fillCircle(basicColor, x, y, radius);
     });
   };
 
@@ -124,11 +108,15 @@ class GraphEditorCanvas extends D3Canvas {
     if (currentPoint) {
       this.props.removePoint(currentPoint.id);
       if (selectedPoint === currentPoint) {
-        this.setState({selectedPoint: null});
+        this.setState({
+          selectedPoint: null
+        });
       }
     } else {
       this.props.addPoint(x, y);
-      this.setState({currentMousePosition: null});
+      this.setState({
+        currentMousePosition: null
+      });
     }
   };
 
@@ -138,14 +126,20 @@ class GraphEditorCanvas extends D3Canvas {
     if (selectedPoint) {
       if (currentPoint && currentPoint !== selectedPoint) {
         this.props.toggleLink(selectedPoint.id, currentPoint.id);
+        this.setState({
+          selectedPoint: currentPoint
+        });
+      } else {
+        this.setState({
+          selectedPoint: null
+        });
       }
-      this.setState({
-        selectedPoint: null
-      });
     } else {
-      this.setState({
-        selectedPoint: currentPoint
-      });
+      if (currentPoint) {
+        this.setState({
+          selectedPoint: currentPoint
+        });
+      }
     }
   };
 

@@ -74,6 +74,10 @@ class D3Canvas extends Component {
       .call(dragInstance)
       .call(zoomInstance)
       .on('dblclick.zoom', null);
+
+    this.setState({
+      context: canvas.node().getContext('2d')
+    })
   };
 
   handleResize = () => {
@@ -89,9 +93,8 @@ class D3Canvas extends Component {
       return;
     }
 
-    const {transform} = this.state;
+    const {transform, context} = this.state;
     const canvas = d3.select(node);
-    const context = canvas.node().getContext('2d');
     const width = canvas.property('width');
     const height = canvas.property('height');
 
@@ -102,6 +105,35 @@ class D3Canvas extends Component {
     this.renderCanvasContents(context);
     context.restore();
   };
+
+  fillCircle(color, x, y, radius) {
+    const {context} = this.state;
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.arc(x, y, radius, 0, 2 * Math.PI);
+    context.fillStyle = color;
+    context.fill();
+  }
+
+  strokeCircle(color, x, y, radius, width = 3) {
+    const {context} = this.state;
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.arc(x, y, radius, 0, 2 * Math.PI);
+    context.lineWidth = width;
+    context.strokeStyle = color;
+    context.stroke();
+  }
+
+  strokeLine(color, p1, p2, width = 1) {
+    const {context} = this.state;
+    context.beginPath();
+    context.moveTo(p1.x, p1.y);
+    context.lineTo(p2.x, p2.y);
+    context.lineWidth = 1;
+    context.strokeStyle = color;
+    context.stroke();
+  }
 
   componentDidUpdate() {
     const {node} = this;
